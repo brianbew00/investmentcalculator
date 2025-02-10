@@ -67,8 +67,6 @@ with col1:
     st.write(f"S&P 500 Allocation: {allocation_sp500}%")
 with col2:
     st.write(f"US T. Bond Allocation: {allocation_bond}%")
-with col3:
-    st.write("Blended Returns Debugging:", blended_returns[:10])  # Show first 10 values
 
 if st.button("Calculate Portfolio Growth"):
     years, actual_values, avg_values, geo_values, cagr_values, formula_column, average_return, geo_mean_return, cagr_rate = calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond)
@@ -94,6 +92,8 @@ if st.button("Calculate Portfolio Growth"):
         "Metric": ["Average Portfolio", "Geometric Portfolio", "CAGR Portfolio"],
         "Return": [f"{average_return:.2%}", f"{geo_mean_return:.2%}", f"{cagr_rate:.2%}"]
     }).reset_index(drop=True)
+    
+    st.write("Blended Returns Debugging:", blended_returns[:10])  # Show first 10 values    
     
     # Display Summary Table
     st.subheader("Portfolio Summary")
