@@ -14,8 +14,8 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     sp500_returns = df.iloc[start_index:, 6].dropna().values
     bond_returns = df.iloc[start_index:, 2].dropna().values
     
-    # Corrected blended returns calculation to match spreadsheet
-    blended_returns = (allocation_sp500 * sp500_returns + allocation_bond * bond_returns) / 100
+    # Compute blended returns
+    blended_returns = (allocation_sp500 * sp500_returns) + (allocation_bond * bond_returns)
     
     # Compute actual portfolio values
     actual_values = [initial_investment]
@@ -62,7 +62,7 @@ with col2:
     st.write(f"US T. Bond Allocation: {allocation_bond}%")
 
 if st.button("Calculate Portfolio Growth"):
-    years, actual_values, avg_values, geo_values, cagr_values = calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond)
+    years, actual_values, avg_values, geo_values, cagr_values = calculate_portfolio(initial_investment, start_year, allocation_sp500 / 100, allocation_bond / 100)
     
     # Ensure all arrays are the same length
     min_length = min(len(years), len(actual_values), len(avg_values), len(geo_values), len(cagr_values))
