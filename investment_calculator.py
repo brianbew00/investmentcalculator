@@ -38,7 +38,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     avg_values = avg_values[1:]
     
     # Compute geometric mean return correctly
-    geo_mean_return = np.prod(1 + blended_returns) ** (1 / len(blended_returns)) - 1
+    geo_mean_return = (np.prod(1 + blended_returns)) ** (1 / len(blended_returns)) - 1
     geo_values = [initial_investment]
     for _ in range(len(years)):
         geo_values.append(geo_values[-1] * (1 + geo_mean_return))
@@ -87,11 +87,11 @@ if st.button("Calculate Portfolio Growth"):
         "Blended Return Formula": formula_column
     })
     
-    # Create summary table
+    # Create summary table with corrected labels and no row indices
     summary_data = pd.DataFrame({
-        "Metric": ["Actual Portfolio", "Geometric Portfolio", "CAGR Portfolio"],
+        "Metric": ["Average Portfolio", "Geometric Portfolio", "CAGR Portfolio"],
         "Return": [f"{average_return:.2%}", f"{geo_mean_return:.2%}", f"{cagr_rate:.2%}"]
-    })
+    }).reset_index(drop=True)
     
     # Display Summary Table
     st.subheader("Portfolio Summary")
