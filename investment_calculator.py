@@ -17,6 +17,12 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     # Corrected blended returns calculation
     blended_returns = (sp500_returns * (allocation_sp500 / 100)) + (bond_returns * (allocation_bond / 100))
     
+    # Compute formula column for debugging
+    formula_column = [
+        f"({s:.2f} * {allocation_sp500 / 100:.2f}) + ({b:.2f} * {allocation_bond / 100:.2f}) = {br:.2f}"
+        for s, b, br in zip(sp500_returns, bond_returns, blended_returns)
+    ]
+    
     # Compute actual portfolio values
     actual_values = [initial_investment]
     for r in blended_returns:
@@ -44,7 +50,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
         cagr_values.append(cagr_values[-1] * (1 + cagr_rate))
     cagr_values = cagr_values[1:]
     
-    return years, actual_values, avg_values, geo_values, cagr_values
+    return years, actual_values, avg_values, geo_values, cagr_values, formula_column
 
 # Streamlit UI
 st.title("Investment Growth Calculator")
@@ -62,12 +68,12 @@ with col2:
     st.write(f"US T. Bond Allocation: {allocation_bond}%")
 
 if st.button("Calculate Portfolio Growth"):
-    years, actual_values, avg_values, geo_values, cagr_values = calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond)
+    years, actual_values, avg_values, geo_values, cagr_values, formula_column = calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond)
     
     # Ensure all arrays are the same length
     min_length = min(len(years), len(actual_values), len(avg_values), len(geo_values), len(cagr_values))
-    years, actual_values, avg_values, geo_values, cagr_values = (
-        years[:min_length], actual_values[:min_length], avg_values[:min_length], geo_values[:min_length], cagr_values[:min_length]
+    years, actual_values, avg_values, geo_values, cagr_values, formula_column = (
+        years[:min_length], actual_values[:min_length], avg_values[:min_length], geo_values[:min_length], cagr_values[:min_length], formula_column[:min_length]
     )
     
     # Format values as currency
@@ -76,11 +82,12 @@ if st.button("Calculate Portfolio Growth"):
         "Actual Portfolio": [f"${v:,.0f}" for v in actual_values],
         "Average Portfolio": [f"${v:,.0f}" for v in avg_values],
         "Geometric Mean Portfolio": [f"${v:,.0f}" for v in geo_values],
-        "CAGR Portfolio": [f"${v:,.0f}" for v in cagr_values]
+        "CAGR Portfolio": [f"${v:,.0f}" for v in cagr_values],
+        "Blended Return Formula": formula_column
     })
     
     # Display Results Table
-    st.dataframe(formatted_results, width=800)
+    st.dataframe(formatted_results, width=1000)
     
     # Plot Growth Chart
     plt.figure(figsize=(10, 5))
