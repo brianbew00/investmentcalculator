@@ -18,12 +18,6 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     # Blended returns calculation
     blended_returns = (sp500_returns * (allocation_sp500 / 100)) + (bond_returns * (allocation_bond / 100))
     
-    # Compute formula column for debugging
-    formula_column = [
-        f"({s:.2f} * {allocation_sp500 / 100:.2f}) + ({b:.2f} * {allocation_bond / 100:.2f}) = {br:.2f}"
-        for s, b, br in zip(sp500_returns, bond_returns, blended_returns)
-    ]
-    
     # Compute actual portfolio values
     actual_values = [initial_investment]
     for r in blended_returns:
