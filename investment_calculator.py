@@ -11,37 +11,38 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     
     # Extract relevant data
     years = df.iloc[start_index:, 0].dropna().values
-    actual_returns = df.iloc[start_index:, 6].dropna().values / 100
-    avg_returns = df.iloc[start_index:, 14].dropna().values / 100
-    geo_mean_returns = df.iloc[start_index:, 17].dropna().values / 100
-    cagr_rate = df.iloc[start_index, 12] / 100
+    sp500_returns = df.iloc[start_index:, 6].dropna().values / 100
     bond_returns = df.iloc[start_index:, 2].dropna().values / 100
     
-    # Ensure all lists are the same length
-    min_length = min(len(years), len(actual_returns), len(avg_returns), len(geo_mean_returns), len(bond_returns))
-    years = years[:min_length]
-    actual_returns = actual_returns[:min_length]
-    avg_returns = avg_returns[:min_length]
-    geo_mean_returns = geo_mean_returns[:min_length]
-    bond_returns = bond_returns[:min_length]
+    # Compute blended returns
+    blended_returns = (allocation_sp500 * sp500_returns) + (allocation_bond * bond_returns)
     
-    def compute_values(returns, bond_returns):
-        values = [initial_investment]
-        for i in range(len(returns)):
-            blended_return = (allocation_sp500 * returns[i]) + (allocation_bond * bond_returns[i])
-            new_value = values[-1] * (1 + blended_return)
-            values.append(new_value)
-        return values[1:]  # Ensure values match years length
+    # Compute actual portfolio values
+    actual_values = [initial_investment]
+    for r in blended_returns:
+        actual_values.append(actual_values[-1] * (1 + r))
+    actual_values = actual_values[1:]  # Remove initial investment
     
-    actual_values = compute_values(actual_returns, bond_returns)
-    avg_values = compute_values(avg_returns, bond_returns)
-    geo_values = compute_values(geo_mean_returns, bond_returns)
+    # Compute average return
+    average_return = blended_returns.mean()
+    avg_values = [initial_investment]
+    for _ in range(len(years)):
+        avg_values.append(avg_values[-1] * (1 + average_return))
+    avg_values = avg_values[1:]
     
-    # Compute CAGR properly
+    # Compute geometric mean return
+    geo_mean_return = (actual_values[-1] / initial_investment) ** (1 / len(years)) - 1
+    geo_values = [initial_investment]
+    for _ in range(len(years)):
+        geo_values.append(geo_values[-1] * (1 + geo_mean_return))
+    geo_values = geo_values[1:]
+    
+    # Compute CAGR
+    cagr_rate = (actual_values[-1] / initial_investment) ** (1 / len(years)) - 1
     cagr_values = [initial_investment]
-    for i in range(1, min_length + 1):
+    for _ in range(len(years)):
         cagr_values.append(cagr_values[-1] * (1 + cagr_rate))
-    cagr_values = cagr_values[:min_length]  # Ensure correct length
+    cagr_values = cagr_values[1:]
     
     return years, actual_values, avg_values, geo_values, cagr_values
 
