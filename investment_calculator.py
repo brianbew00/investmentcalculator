@@ -33,15 +33,17 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
             values.append(new_value)
         return values[1:]  # Ensure values match years length
     
+    # Correctly apply blended returns
     actual_values = compute_values(actual_returns, bond_returns)
     avg_values = compute_values(avg_returns, bond_returns)
     geo_values = compute_values(geo_mean_returns, bond_returns)
     
     # Compute CAGR correctly over time
     cagr_values = [initial_investment]
-    for i in range(1, min_length):
+    for i in range(1, min_length + 1):
         new_value = initial_investment * ((1 + cagr_rate) ** i)
         cagr_values.append(new_value)
+    cagr_values = cagr_values[:min_length]  # Ensure correct length
     
     return years, actual_values, avg_values, geo_values, cagr_values
 
