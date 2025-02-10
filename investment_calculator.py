@@ -51,7 +51,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
         cagr_values.append(cagr_values[-1] * (1 + cagr_rate))
     cagr_values = cagr_values[1:]
     
-    return years, actual_values, avg_values, geo_values, cagr_values, formula_column
+    return years, actual_values, avg_values, geo_values, cagr_values, formula_column, average_return, geo_mean_return, cagr_rate
 
 # Streamlit UI
 st.title("Investment Growth Calculator")
@@ -69,7 +69,7 @@ with col2:
     st.write(f"US T. Bond Allocation: {allocation_bond}%")
 
 if st.button("Calculate Portfolio Growth"):
-    years, actual_values, avg_values, geo_values, cagr_values, formula_column = calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond)
+    years, actual_values, avg_values, geo_values, cagr_values, formula_column, average_return, geo_mean_return, cagr_rate = calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond)
     
     # Ensure all arrays are the same length
     min_length = min(len(years), len(actual_values), len(avg_values), len(geo_values), len(cagr_values))
@@ -86,6 +86,17 @@ if st.button("Calculate Portfolio Growth"):
         "CAGR Portfolio": [f"${v:,.0f}" for v in cagr_values],
         "Blended Return Formula": formula_column
     })
+    
+    # Insert summary values below the headers
+    formatted_results.loc[-1] = [
+        "Summary",
+        f"Actual Portfolio: {average_return:.2%}",
+        f"Geometric Portfolio: {geo_mean_return:.2%}",
+        f"CAGR Portfolio: {cagr_rate:.2%}",
+        ""
+    ]
+    formatted_results.index = formatted_results.index + 1  # Shift index
+    formatted_results = formatted_results.sort_index()
     
     # Display Results Table
     st.dataframe(formatted_results, width=1000)
