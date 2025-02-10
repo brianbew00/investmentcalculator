@@ -93,8 +93,6 @@ if st.button("Calculate Portfolio Growth"):
         "Return": [f"{average_return:.2%}", f"{geo_mean_return:.2%}", f"{cagr_rate:.2%}"]
     }).reset_index(drop=True)
     
-    st.write("Blended Returns Debugging:", blended_returns[:10])  # Show first 10 values    
-    
     # Display Summary Table
     st.subheader("Portfolio Summary")
     st.dataframe(summary_data, width=500)
