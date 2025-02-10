@@ -13,7 +13,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     actual_returns = df.iloc[start_index:, 6] / 100
     avg_returns = df.iloc[start_index:, 14] / 100
     geo_mean_returns = df.iloc[start_index:, 17] / 100
-    cagr_returns = df.iloc[start_index:, 12] / 100
+    cagr_rate = df.iloc[start_index, 12] / 100
     
     def compute_values(returns):
         values = [initial_investment]
@@ -23,7 +23,16 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
             values.append(new_value)
         return values[:-1]
     
-    return years.values, compute_values(actual_returns), compute_values(avg_returns), compute_values(geo_mean_returns), compute_values(cagr_returns)
+    actual_values = compute_values(actual_returns)
+    avg_values = compute_values(avg_returns)
+    geo_values = compute_values(geo_mean_returns)
+    
+    # Correct CAGR calculation
+    cagr_values = [initial_investment]
+    for _ in range(len(years) - 1):
+        cagr_values.append(cagr_values[-1] * (1 + cagr_rate))
+    
+    return years.values, actual_values, avg_values, geo_values, cagr_values[:-1]
 
 # Streamlit UI
 st.title("Investment Growth Calculator")
