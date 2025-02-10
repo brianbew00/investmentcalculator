@@ -67,6 +67,8 @@ with col1:
     st.write(f"S&P 500 Allocation: {allocation_sp500}%")
 with col2:
     st.write(f"US T. Bond Allocation: {allocation_bond}%")
+with col3:
+    st.write("Blended Returns Debugging:", blended_returns[:10])  # Show first 10 values
 
 if st.button("Calculate Portfolio Growth"):
     years, actual_values, avg_values, geo_values, cagr_values, formula_column, average_return, geo_mean_return, cagr_rate = calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond)
