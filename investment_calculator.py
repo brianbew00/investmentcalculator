@@ -42,7 +42,14 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     
     # Compute geometric mean return correctly
     valid_returns = 1 + np.array(blended_returns)
-    valid_returns = valid_returns[valid_returns > 0]  # Remove any values where (1 + return) is zero or negative
+
+    # Ensure no negative or zero values
+    valid_returns = valid_returns[valid_returns > 0]
+
+    # Check if valid_returns is empty (avoid division by zero)
+    if len(valid_returns) == 0:
+    geo_mean_return = 0  # Default to zero if no valid returns exist
+    else:
     geo_mean_return = np.exp(np.mean(np.log(valid_returns))) - 1
     geo_values = [initial_investment]
     for _ in range(len(years)):
