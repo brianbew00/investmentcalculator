@@ -14,11 +14,13 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     avg_returns = df.iloc[start_index:, 14] / 100
     geo_mean_returns = df.iloc[start_index:, 17] / 100
     cagr_rate = df.iloc[start_index, 12] / 100
+    bond_returns = df.iloc[start_index:, 2] / 100  # Correct bond return extraction
     
-    def compute_values(returns):
+    def compute_values(returns, use_bond_returns=True):
         values = [initial_investment]
-        for r in returns:
-            blended_return = (allocation_sp500 * r) + (allocation_bond * df.iloc[start_index, 2] / 100)
+        for i, r in enumerate(returns):
+            bond_return = bond_returns.iloc[i] if use_bond_returns else 0
+            blended_return = (allocation_sp500 * r) + (allocation_bond * bond_return)
             new_value = values[-1] * (1 + blended_return)
             values.append(new_value)
         return values[:-1]
@@ -27,7 +29,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     avg_values = compute_values(avg_returns)
     geo_values = compute_values(geo_mean_returns)
     
-    # Correct CAGR calculation
+    # Correct CAGR calculation using proper compounding
     cagr_values = [initial_investment]
     for _ in range(len(years) - 1):
         cagr_values.append(cagr_values[-1] * (1 + cagr_rate))
