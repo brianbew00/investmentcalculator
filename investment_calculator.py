@@ -41,7 +41,9 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     avg_values = avg_values[1:]
     
     # Compute geometric mean return correctly
-    geo_mean_return = np.exp(np.mean(np.log(1 + np.array(blended_returns)))) - 1
+    valid_returns = 1 + np.array(blended_returns)
+    valid_returns = valid_returns[valid_returns > 0]  # Remove any values where (1 + return) is zero or negative
+    geo_mean_return = np.exp(np.mean(np.log(valid_returns))) - 1
     geo_values = [initial_investment]
     for _ in range(len(years)):
         geo_values.append(geo_values[-1] * (1 + geo_mean_return))
