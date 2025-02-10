@@ -87,18 +87,18 @@ if st.button("Calculate Portfolio Growth"):
         "Blended Return Formula": formula_column
     })
     
-    # Insert summary values below the headers
-    formatted_results.loc[-1] = [
-        "Summary",
-        f"Actual Portfolio: {average_return:.2%}",
-        f"Geometric Portfolio: {geo_mean_return:.2%}",
-        f"CAGR Portfolio: {cagr_rate:.2%}",
-        ""
-    ]
-    formatted_results.index = formatted_results.index + 1  # Shift index
-    formatted_results = formatted_results.sort_index()
+    # Create summary table
+    summary_data = pd.DataFrame({
+        "Metric": ["Actual Portfolio", "Geometric Portfolio", "CAGR Portfolio"],
+        "Return": [f"{average_return:.2%}", f"{geo_mean_return:.2%}", f"{cagr_rate:.2%}"]
+    })
+    
+    # Display Summary Table
+    st.subheader("Portfolio Summary")
+    st.dataframe(summary_data, width=500)
     
     # Display Results Table
+    st.subheader("Detailed Yearly Portfolio Growth")
     st.dataframe(formatted_results, width=1000)
     
     # Plot Growth Chart
