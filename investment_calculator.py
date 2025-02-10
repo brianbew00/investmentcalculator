@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Load the dataset
 file_path = 'Compare Actual vs CAGR vs Average vs Geometric Mean.xlsx'
@@ -36,7 +37,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
         avg_values.append(avg_values[-1] * (1 + average_return))
     avg_values = avg_values[1:]
     
-    # Compute geometric mean return
+    # Compute geometric mean return correctly
     geo_mean_return = np.prod(1 + blended_returns) ** (1 / len(blended_returns)) - 1
     geo_values = [initial_investment]
     for _ in range(len(years)):
