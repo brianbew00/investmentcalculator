@@ -11,8 +11,8 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     
     # Extract relevant data
     years = df.iloc[start_index:, 0].dropna().values
-    sp500_returns = df.iloc[start_index:, 6].dropna().values / 100
-    bond_returns = df.iloc[start_index:, 2].dropna().values / 100
+    sp500_returns = df.iloc[start_index:, 6].dropna().values
+    bond_returns = df.iloc[start_index:, 2].dropna().values
     
     # Compute blended returns
     blended_returns = (allocation_sp500 * sp500_returns) + (allocation_bond * bond_returns)
