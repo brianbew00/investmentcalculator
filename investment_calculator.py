@@ -29,7 +29,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
 st.title("Investment Growth Calculator")
 
 # User Inputs
-initial_investment = st.number_input("Initial Investment Amount", min_value=1000, value=10000, step=1000)
+initial_investment = st.number_input("Initial Investment Amount", min_value=1000, value=10000, step=1000, format='%d')
 start_year = st.selectbox("Select Starting Year", df.iloc[2:, 0].unique())
 allocation_sp500 = st.slider("% Allocation to S&P 500", min_value=0, max_value=100, value=90)
 allocation_bond = 100 - allocation_sp500
@@ -43,15 +43,26 @@ with col2:
 if st.button("Calculate Portfolio Growth"):
     years, actual_values, avg_values, geo_values, cagr_values = calculate_portfolio(initial_investment, start_year, allocation_sp500 / 100, allocation_bond / 100)
     
-    # Display Results Table
-    results_df = pd.DataFrame({
+    # Format values as currency
+    formatted_results = pd.DataFrame({
         "Year": years,
-        "Actual Portfolio": actual_values,
-        "Average Portfolio": avg_values,
-        "Geometric Mean Portfolio": geo_values,
-        "CAGR Portfolio": cagr_values
+        "Actual Portfolio": [f"${v:,.0f}" for v in actual_values],
+        "Average Portfolio": [f"${v:,.0f}" for v in avg_values],
+        "Geometric Mean Portfolio": [f"${v:,.0f}" for v in geo_values],
+        "CAGR Portfolio": [f"${v:,.0f}" for v in cagr_values]
     })
-    st.table(results_df)
+    
+    # Display Results Table with adjusted column widths
+    st.dataframe(
+        formatted_results.style.set_table_attributes("style='display:inline'"),
+        column_config={
+            "Year": st.column_config.TextColumn(width='50px'),
+            "Actual Portfolio": st.column_config.TextColumn(width='150px'),
+            "Average Portfolio": st.column_config.TextColumn(width='150px'),
+            "Geometric Mean Portfolio": st.column_config.TextColumn(width='150px'),
+            "CAGR Portfolio": st.column_config.TextColumn(width='150px')
+        }
+    )
     
     # Plot Growth Chart
     plt.figure(figsize=(10, 5))
