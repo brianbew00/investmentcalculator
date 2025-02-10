@@ -6,18 +6,24 @@ import matplotlib.pyplot as plt
 file_path = 'Compare Actual vs CAGR vs Average vs Geometric Mean.xlsx'
 df = pd.read_excel(file_path, sheet_name='Sheet1')
 
-def calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond, method):
+def calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond):
     start_index = df[df.iloc[:, 0] == start_year].index[0]
-    returns = df.iloc[start_index:, 6] / 100  # Extract return percentages and convert to decimal
     years = df.iloc[start_index:, 0]
-
-    portfolio_values = [initial_investment]
-    for r in returns:
-        blended_return = (allocation_sp500 * r) + (allocation_bond * df.iloc[start_index, 2] / 100)
-        new_value = portfolio_values[-1] * (1 + blended_return)
-        portfolio_values.append(new_value)
-
-    return years.values, portfolio_values[:-1]
+    
+    actual_returns = df.iloc[start_index:, 6] / 100
+    avg_returns = df.iloc[start_index:, 14] / 100
+    geo_mean_returns = df.iloc[start_index:, 17] / 100
+    cagr_returns = df.iloc[start_index:, 12] / 100
+    
+    def compute_values(returns):
+        values = [initial_investment]
+        for r in returns:
+            blended_return = (allocation_sp500 * r) + (allocation_bond * df.iloc[start_index, 2] / 100)
+            new_value = values[-1] * (1 + blended_return)
+            values.append(new_value)
+        return values[:-1]
+    
+    return years.values, compute_values(actual_returns), compute_values(avg_returns), compute_values(geo_mean_returns), compute_values(cagr_returns)
 
 # Streamlit UI
 st.title("Investment Growth Calculator")
@@ -28,20 +34,31 @@ start_year = st.selectbox("Select Starting Year", df.iloc[2:, 0].unique())
 allocation_sp500 = st.slider("% Allocation to S&P 500", min_value=0, max_value=100, value=90)
 allocation_bond = 100 - allocation_sp500
 
-st.write(f"% Allocation to US T. Bond: {allocation_bond}%")
-
-method = st.selectbox("Select Calculation Method", ["Actual Returns", "Average Returns", "Geometric Mean", "CAGR"])
+col1, col2 = st.columns([1, 1])
+with col1:
+    st.write(f"S&P 500 Allocation: {allocation_sp500}%")
+with col2:
+    st.write(f"US T. Bond Allocation: {allocation_bond}%")
 
 if st.button("Calculate Portfolio Growth"):
-    years, portfolio_values = calculate_portfolio(initial_investment, start_year, allocation_sp500 / 100, allocation_bond / 100, method)
-
+    years, actual_values, avg_values, geo_values, cagr_values = calculate_portfolio(initial_investment, start_year, allocation_sp500 / 100, allocation_bond / 100)
+    
     # Display Results Table
-    results_df = pd.DataFrame({"Year": years, "Portfolio Value": portfolio_values})
+    results_df = pd.DataFrame({
+        "Year": years,
+        "Actual Portfolio": actual_values,
+        "Average Portfolio": avg_values,
+        "Geometric Mean Portfolio": geo_values,
+        "CAGR Portfolio": cagr_values
+    })
     st.table(results_df)
-
+    
     # Plot Growth Chart
     plt.figure(figsize=(10, 5))
-    plt.plot(years, portfolio_values, marker='o', linestyle='-', label="Portfolio Value")
+    plt.plot(years, actual_values, marker='o', linestyle='-', label="Actual Portfolio")
+    plt.plot(years, avg_values, marker='s', linestyle='--', label="Average Portfolio")
+    plt.plot(years, geo_values, marker='^', linestyle='-.', label="Geometric Mean Portfolio")
+    plt.plot(years, cagr_values, marker='d', linestyle=':', label="CAGR Portfolio")
     plt.xlabel("Year")
     plt.ylabel("Portfolio Value ($)")
     plt.title("Investment Growth Over Time")
