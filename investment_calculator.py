@@ -37,7 +37,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     avg_values = avg_values[1:]
     
     # Compute geometric mean return
-    geo_mean_return = (actual_values[-1] / initial_investment) ** (1 / len(years)) - 1
+    geo_mean_return = np.prod(1 + blended_returns) ** (1 / len(blended_returns)) - 1
     geo_values = [initial_investment]
     for _ in range(len(years)):
         geo_values.append(geo_values[-1] * (1 + geo_mean_return))
