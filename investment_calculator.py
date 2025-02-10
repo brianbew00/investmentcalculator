@@ -8,13 +8,20 @@ df = pd.read_excel(file_path, sheet_name='Sheet1')
 
 def calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond):
     start_index = df[df.iloc[:, 0] == start_year].index[0]
-    years = df.iloc[start_index:, 0].values
+    years = df.iloc[start_index:, 0].dropna().values  # Drop NaN values to ensure length consistency
     
-    actual_returns = df.iloc[start_index:, 6].values / 100
-    avg_returns = df.iloc[start_index:, 14].values / 100
-    geo_mean_returns = df.iloc[start_index:, 17].values / 100
+    actual_returns = df.iloc[start_index:, 6].dropna().values / 100
+    avg_returns = df.iloc[start_index:, 14].dropna().values / 100
+    geo_mean_returns = df.iloc[start_index:, 17].dropna().values / 100
     cagr_rate = df.iloc[start_index, 12] / 100
-    bond_returns = df.iloc[start_index:, 2].values / 100  # Correct bond return extraction
+    bond_returns = df.iloc[start_index:, 2].dropna().values / 100  # Drop NaN values
+    
+    min_length = min(len(years), len(actual_returns), len(avg_returns), len(geo_mean_returns), len(bond_returns))
+    years = years[:min_length]
+    actual_returns = actual_returns[:min_length]
+    avg_returns = avg_returns[:min_length]
+    geo_mean_returns = geo_mean_returns[:min_length]
+    bond_returns = bond_returns[:min_length]
     
     def compute_values(returns, bond_returns):
         values = [initial_investment]
@@ -30,17 +37,17 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     
     # Correct CAGR calculation using proper compounding
     cagr_values = [initial_investment]
-    for _ in range(len(years)):
+    for _ in range(len(years) - 1):
         cagr_values.append(cagr_values[-1] * (1 + cagr_rate))
     
-    return years, actual_values, avg_values, geo_values, cagr_values[1:]
+    return years, actual_values, avg_values, geo_values, cagr_values
 
 # Streamlit UI
 st.title("Investment Growth Calculator")
 
 # User Inputs
 initial_investment = st.number_input("Initial Investment Amount", min_value=1000, value=10000, step=1000, format='%d')
-start_year = st.selectbox("Select Starting Year", df.iloc[2:, 0].unique())
+start_year = st.selectbox("Select Starting Year", df.iloc[2:, 0].dropna().unique())
 allocation_sp500 = st.slider("% Allocation to S&P 500", min_value=0, max_value=100, value=90)
 allocation_bond = 100 - allocation_sp500
 
