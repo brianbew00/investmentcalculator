@@ -8,31 +8,32 @@ df = pd.read_excel(file_path, sheet_name='Sheet1')
 
 def calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond):
     start_index = df[df.iloc[:, 0] == start_year].index[0]
-    years = df.iloc[start_index:, 0]
+    years = df.iloc[start_index:, 0].values
     
-    actual_returns = df.iloc[start_index:, 6] / 100
-    avg_returns = df.iloc[start_index:, 14] / 100
-    geo_mean_returns = df.iloc[start_index:, 17] / 100
+    actual_returns = df.iloc[start_index:, 6].values / 100
+    avg_returns = df.iloc[start_index:, 14].values / 100
+    geo_mean_returns = df.iloc[start_index:, 17].values / 100
     cagr_rate = df.iloc[start_index, 12] / 100
+    bond_returns = df.iloc[start_index:, 2].values / 100  # Correct bond return extraction
     
-    def compute_values(returns):
+    def compute_values(returns, bond_returns):
         values = [initial_investment]
-        for r in returns:
-            blended_return = (allocation_sp500 * r) + (allocation_bond * df.iloc[start_index, 2] / 100)
+        for i in range(len(returns)):
+            blended_return = (allocation_sp500 * returns[i]) + (allocation_bond * bond_returns[i])
             new_value = values[-1] * (1 + blended_return)
             values.append(new_value)
-        return values[:-1]
+        return values[1:]  # Remove initial value
     
-    actual_values = compute_values(actual_returns)
-    avg_values = compute_values(avg_returns)
-    geo_values = compute_values(geo_mean_returns)
+    actual_values = compute_values(actual_returns, bond_returns)
+    avg_values = compute_values(avg_returns, bond_returns)
+    geo_values = compute_values(geo_mean_returns, bond_returns)
     
-    # Correct CAGR calculation
+    # Correct CAGR calculation using proper compounding
     cagr_values = [initial_investment]
-    for _ in range(len(years) - 1):
+    for _ in range(len(years)):
         cagr_values.append(cagr_values[-1] * (1 + cagr_rate))
     
-    return years.values, actual_values, avg_values, geo_values, cagr_values[:-1]
+    return years, actual_values, avg_values, geo_values, cagr_values[1:]
 
 # Streamlit UI
 st.title("Investment Growth Calculator")
@@ -52,6 +53,12 @@ with col2:
 if st.button("Calculate Portfolio Growth"):
     years, actual_values, avg_values, geo_values, cagr_values = calculate_portfolio(initial_investment, start_year, allocation_sp500 / 100, allocation_bond / 100)
     
+    # Ensure all arrays have the same length
+    min_length = min(len(years), len(actual_values), len(avg_values), len(geo_values), len(cagr_values))
+    years, actual_values, avg_values, geo_values, cagr_values = (
+        years[:min_length], actual_values[:min_length], avg_values[:min_length], geo_values[:min_length], cagr_values[:min_length]
+    )
+    
     # Format values as currency
     formatted_results = pd.DataFrame({
         "Year": years,
@@ -63,14 +70,8 @@ if st.button("Calculate Portfolio Growth"):
     
     # Display Results Table with adjusted column widths
     st.dataframe(
-        formatted_results.style.set_table_attributes("style='display:inline'"),
-        column_config={
-            "Year": st.column_config.TextColumn(width='50px'),
-            "Actual Portfolio": st.column_config.TextColumn(width='150px'),
-            "Average Portfolio": st.column_config.TextColumn(width='150px'),
-            "Geometric Mean Portfolio": st.column_config.TextColumn(width='150px'),
-            "CAGR Portfolio": st.column_config.TextColumn(width='150px')
-        }
+        formatted_results,
+        width=800
     )
     
     # Plot Growth Chart
