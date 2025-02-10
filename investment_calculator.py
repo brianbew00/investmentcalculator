@@ -9,13 +9,13 @@ df = pd.read_excel(file_path, sheet_name='Sheet1')
 def calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond):
     start_index = df[df.iloc[:, 0] == start_year].index[0]
     
-    # Extract relevant data and drop NaN values
+    # Extract relevant data and ensure correct scaling
     years = df.iloc[start_index:, 0].dropna().values
-    actual_returns = df.iloc[start_index:, 6].dropna().values / 100
-    avg_returns = df.iloc[start_index:, 14].dropna().values / 100
-    geo_mean_returns = df.iloc[start_index:, 17].dropna().values / 100
-    cagr_rate = df.iloc[start_index, 12] / 100
-    bond_returns = df.iloc[start_index:, 2].dropna().values / 100
+    actual_returns = df.iloc[start_index:, 6].dropna().values * 0.01  # Correct scaling
+    avg_returns = df.iloc[start_index:, 14].dropna().values * 0.01
+    geo_mean_returns = df.iloc[start_index:, 17].dropna().values * 0.01
+    cagr_rate = df.iloc[start_index, 12] * 0.01
+    bond_returns = df.iloc[start_index:, 2].dropna().values * 0.01
     
     # Find the minimum available length to ensure consistency
     min_length = min(len(years), len(actual_returns), len(avg_returns), len(geo_mean_returns), len(bond_returns))
@@ -31,17 +31,17 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
             blended_return = (allocation_sp500 * returns[i]) + (allocation_bond * bond_returns[i])
             new_value = values[-1] * (1 + blended_return)
             values.append(new_value)
-        return values[1:min_length + 1]  # Ensure values match years length
+        return values[1:]  # Ensure values match years length
     
     actual_values = compute_values(actual_returns, bond_returns)
     avg_values = compute_values(avg_returns, bond_returns)
     geo_values = compute_values(geo_mean_returns, bond_returns)
     
-    # Compute CAGR values
+    # Compute CAGR correctly over time
     cagr_values = [initial_investment]
-    for _ in range(min_length - 1):
-        cagr_values.append(cagr_values[-1] * (1 + cagr_rate))
-    cagr_values = cagr_values[:min_length]
+    for i in range(1, min_length):
+        new_value = initial_investment * ((1 + cagr_rate) ** i)
+        cagr_values.append(new_value)
     
     return years, actual_values, avg_values, geo_values, cagr_values
 
