@@ -40,10 +40,8 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
         avg_values.append(avg_values[-1] * (1 + average_return))
     avg_values = avg_values[1:]
     
-    # Compute geometric mean return correctly
-    valid_returns = 1 + np.array(blended_returns)
-
     # Ensure no negative or zero values
+    valid_returns = 1 + np.array(blended_returns)
     valid_returns = valid_returns[valid_returns > 0]
 
     # Check if valid_returns is empty (avoid division by zero)
