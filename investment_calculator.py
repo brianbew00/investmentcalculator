@@ -66,7 +66,7 @@ if st.button("Calculate Portfolio Growth"):
     
     # Format values as currency
     formatted_results = pd.DataFrame({
-        "Year": years,
+        "Year": [str(y) for y in years],
         "Actual Performance": [f"${v:,.0f}" for v in actual_values],
         "Average Return": [f"${v:,.0f}" for v in avg_values],
         "CAGR / Geometric Return": [f"${v:,.0f}" for v in cagr_values]
