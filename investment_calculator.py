@@ -18,6 +18,9 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     # Corrected blended returns calculation
     blended_returns = (sp500_returns * (allocation_sp500 / 100)) + (bond_returns * (allocation_bond / 100))
     
+    # Debugging: Print first 10 blended returns
+    st.write("Blended Returns Debugging:", blended_returns[:10])
+    
     # Compute formula column for debugging
     formula_column = [
         f"({s:.2f} * {allocation_sp500 / 100:.2f}) + ({b:.2f} * {allocation_bond / 100:.2f}) = {br:.2f}"
