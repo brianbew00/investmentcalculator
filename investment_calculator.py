@@ -19,6 +19,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     blended_returns = (sp500_returns * (allocation_sp500 / 100)) + (bond_returns * (allocation_bond / 100))
     
     # Compute actual portfolio values
+    actual_portfolio_return = (actual_values[-1] / initial_investment) ** (1 / len(years)) - 1
     actual_values = [initial_investment]
     for r in blended_returns:
         actual_values.append(actual_values[-1] * (1 + r))
@@ -77,7 +78,7 @@ if st.button("Calculate Portfolio Growth"):
     summary_data = pd.DataFrame({
         "Metric": ["Actual Portfolio", "Average Portfolio", "CAGR Portfolio"],
         "Final Value": [f"${actual_values[-1]:,.0f}", f"${avg_values[-1]:,.0f}", f"${cagr_values[-1]:,.0f}"],
-        "Return": [f"{(actual_values[-1] / initial_investment) ** (1 / len(years)) - 1:.2%}", f"{average_return:.2%}", f"{cagr_rate:.2%}"]
+        "Return": [f"{actual_portfolio_return:.2%}", f"{average_return:.2%}", f"{cagr_rate:.2%}"]
     }).reset_index(drop=True)
         "Final Value": [f"${actual_values[-1]:,.0f}", f"${cagr_values[-1]:,.0f}"],
         "Return": [f"{average_return:.2%}", f"{cagr_rate:.2%}"]
