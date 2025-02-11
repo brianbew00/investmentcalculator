@@ -39,7 +39,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
         cagr_values.append(cagr_values[-1] * (1 + cagr_rate))
     cagr_values = cagr_values[1:]
     
-        actual_portfolio_return = (actual_values[-1] / initial_investment) ** (1 / len(years)) - 1
+    actual_portfolio_return = (actual_values[-1] / initial_investment) ** (1 / len(years)) - 1
     return years, actual_values, avg_values, cagr_values, average_return, cagr_rate, actual_portfolio_return
 
 # Streamlit UI
