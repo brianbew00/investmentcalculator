@@ -44,7 +44,8 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
 st.title("Investment Growth Calculator")
 
 # User Inputs
-initial_investment = st.number_input("Initial Investment Amount", min_value=1000, value=10000, step=1000, format='$%d')
+initial_investment = initial_investment = st.number_input("Initial Investment Amount", min_value=1000, value=10000, step=1000)
+st.write(f"**Formatted Amount:** ${initial_investment:,.0f}")
 start_year = st.selectbox("Select Starting Year", df.iloc[2:, 0].dropna().unique())
 allocation_sp500 = st.slider("% Allocation to S&P 500", min_value=0, max_value=100, value=90)
 allocation_bond = 100 - allocation_sp500
