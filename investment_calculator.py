@@ -19,7 +19,7 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
     blended_returns = (sp500_returns * (allocation_sp500 / 100)) + (bond_returns * (allocation_bond / 100))
     
     # Compute actual portfolio values
-    actual_portfolio_return = (actual_values[-1] / initial_investment) ** (1 / len(years)) - 1
+    
     actual_values = [initial_investment]
     for r in blended_returns:
         actual_values.append(actual_values[-1] * (1 + r))
@@ -39,7 +39,8 @@ def calculate_portfolio(initial_investment, start_year, allocation_sp500, alloca
         cagr_values.append(cagr_values[-1] * (1 + cagr_rate))
     cagr_values = cagr_values[1:]
     
-    return years, actual_values, avg_values, cagr_values, average_return, cagr_rate
+        actual_portfolio_return = (actual_values[-1] / initial_investment) ** (1 / len(years)) - 1
+    return years, actual_values, avg_values, cagr_values, average_return, cagr_rate, actual_portfolio_return
 
 # Streamlit UI
 st.title("Investment Growth Calculator")
@@ -58,7 +59,7 @@ with col2:
     st.write(f"US T. Bond Allocation: {allocation_bond}%")
 
 if st.button("Calculate Portfolio Growth"):
-    years, actual_values, avg_values, cagr_values, average_return, cagr_rate = calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond)
+    years, actual_values, avg_values, cagr_values, average_return, cagr_rate, actual_portfolio_return = calculate_portfolio(initial_investment, start_year, allocation_sp500, allocation_bond)
     
     # Ensure all arrays are the same length
     min_length = min(len(years), len(actual_values), len(avg_values), len(cagr_values))
@@ -77,6 +78,9 @@ if st.button("Calculate Portfolio Growth"):
     # Create summary table with corrected labels and no row indices
     summary_data = pd.DataFrame({
         "Metric": ["Actual Portfolio", "Average Portfolio", "CAGR Portfolio"],
+        "Final Value": [f"${actual_values[-1]:,.0f}", f"${avg_values[-1]:,.0f}", f"${cagr_values[-1]:,.0f}"],
+        "Return": [f"{actual_portfolio_return:.2%}", f"{average_return:.2%}", f"{cagr_rate:.2%}"]
+    }).reset_index(drop=True)
         "Final Value": [f"${actual_values[-1]:,.0f}", f"${avg_values[-1]:,.0f}", f"${cagr_values[-1]:,.0f}"],
         "Return": [f"{actual_portfolio_return:.2%}", f"{average_return:.2%}", f"{cagr_rate:.2%}"]
     }).reset_index(drop=True)
