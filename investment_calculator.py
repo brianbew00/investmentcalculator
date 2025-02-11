@@ -67,9 +67,9 @@ if st.button("Calculate Portfolio Growth"):
     # Format values as currency
     formatted_results = pd.DataFrame({
         "Year": [str(y) for y in years],
-        "Actual Performance": [f"${v:,.0f}" for v in actual_values],
-        "Average Return": [f"${v:,.0f}" for v in avg_values],
-        "CAGR / Geometric Return": [f"${v:,.0f}" for v in cagr_values]
+        "Actual Portfolio": [f"${v:,.0f}" for v in actual_values],
+        "Average Portfolio": [f"${v:,.0f}" for v in avg_values],
+        "CAGR Portfolio": [f"${v:,.0f}" for v in cagr_values]
     })
     
     # Create summary table with corrected labels and no row indices
@@ -84,7 +84,14 @@ if st.button("Calculate Portfolio Growth"):
     
     # Display Results Table
     st.subheader("Detailed Yearly Portfolio Growth")
-    st.dataframe(formatted_results, width=1000)
+    st.dataframe(formatted_results.style.set_table_styles([
+        {"selector": "th", "props": [("text-align", "center")]},
+        {"selector": "td", "props": [("text-align", "center")]}]).set_properties(**{
+        'Year': 'min-width: 60px; text-align: center;',
+        'Actual Portfolio': 'width: 150px; text-align: center;',
+        'Average Portfolio': 'width: 150px; text-align: center;',
+        'CAGR Portfolio': 'width: 150px; text-align: center;'
+    }), width=1000)
     
     # Plot Growth Chart
     plt.figure(figsize=(10, 5))
