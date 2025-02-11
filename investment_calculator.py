@@ -75,6 +75,7 @@ if st.button("Calculate Portfolio Growth"):
     # Create summary table with corrected labels and no row indices
     summary_data = pd.DataFrame({
         "Metric": ["Average Portfolio", "CAGR Portfolio"],
+        "Final Value": [f"${actual_values[-1]:,.0f}", f"${cagr_values[-1]:,.0f}"],
         "Return": [f"{average_return:.2%}", f"{cagr_rate:.2%}"]
     }).reset_index(drop=True)
     
