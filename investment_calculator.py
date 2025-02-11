@@ -84,13 +84,14 @@ if st.button("Calculate Portfolio Growth"):
     
     # Display Results Table
     st.subheader("Detailed Yearly Portfolio Growth")
-    st.dataframe(formatted_results.style.set_table_styles([
+    st.dataframe(
+    formatted_results.style.set_table_styles([
         {"selector": "th", "props": [("text-align", "center")]},
         {"selector": "td", "props": [("text-align", "center")]}]).set_properties(**{
-        'Year': 'min-width: 60px; text-align: center;',
-        'Actual Portfolio': 'width: 150px; text-align: center;',
-        'Average Portfolio': 'width: 150px; text-align: center;',
-        'CAGR Portfolio': 'width: 150px; text-align: center;'
+        'Year': 'min-width: 50px; max-width: 70px; text-align: center;',
+        'Actual Portfolio': 'min-width: 120px; max-width: 150px; text-align: center;',
+        'Average Portfolio': 'min-width: 120px; max-width: 150px; text-align: center;',
+        'CAGR Portfolio': 'min-width: 120px; max-width: 150px; text-align: center;'
     }), width=1000)
     
     # Plot Growth Chart
