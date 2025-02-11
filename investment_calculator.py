@@ -78,10 +78,7 @@ if st.button("Calculate Portfolio Growth"):
         "Metric": ["Actual Portfolio", "Average Portfolio", "CAGR Portfolio"],
         "Final Value": [f"${actual_values[-1]:,.0f}", f"${avg_values[-1]:,.0f}", f"${cagr_values[-1]:,.0f}"],
         "Return": [f"{(actual_values[-1] / initial_investment) ** (1 / len(years)) - 1:.2%}", f"{average_return:.2%}", f"{cagr_rate:.2%}"]
-    }).reset_index(drop=True)
-        "Final Value": [f"${actual_values[-1]:,.0f}", f"${cagr_values[-1]:,.0f}"],
-        "Return": [f"{average_return:.2%}", f"{cagr_rate:.2%}"]
-    }).reset_index(drop=True)
+    })
     
     # Display Summary Table
     st.subheader("Portfolio Summary")
